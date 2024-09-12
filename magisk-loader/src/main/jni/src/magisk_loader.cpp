@@ -119,13 +119,13 @@ void MagiskLoader::OnNativeForkSystemServerPost(JNIEnv *env) {
             .inline_hooker =
                 [](auto t, auto r) {
                     void *bk = nullptr;
-                    return HookPLT(t, r, &bk) == 0 ? bk : nullptr;
+                    return HookInline(t, r, &bk) == 0 ? bk : nullptr;
                 },
-            .inline_unhooker = [](auto t) { return UnhookPLT(t) == 0; },
+            .inline_unhooker = [](auto t) { return UnhookInline(t) == 0; },
             .art_symbol_resolver = [](auto symbol) { return GetArt()->getSymbAddress(symbol); },
             .art_symbol_prefix_resolver =
                 [](auto symbol) { return GetArt()->getSymbPrefixFirstAddress(symbol); },
-            .is_plt_hook = true};
+        };
         InitArtHooker(env, initInfo);
         InitHooks(env);
         SetupEntryClass(env);
@@ -191,13 +191,13 @@ void MagiskLoader::OnNativeForkAndSpecializePost(JNIEnv *env, jstring nice_name,
             .inline_hooker =
                 [](auto t, auto r) {
                     void *bk = nullptr;
-                    return HookPLT(t, r, &bk) == 0 ? bk : nullptr;
+                    return HookInline(t, r, &bk) == 0 ? bk : nullptr;
                 },
-            .inline_unhooker = [](auto t) { return UnhookPLT(t) == 0; },
+            .inline_unhooker = [](auto t) { return UnhookInline(t) == 0; },
             .art_symbol_resolver = [](auto symbol) { return GetArt()->getSymbAddress(symbol); },
             .art_symbol_prefix_resolver =
                 [](auto symbol) { return GetArt()->getSymbPrefixFirstAddress(symbol); },
-            .is_plt_hook = true};
+        };
         auto [dex_fd, size] = instance->RequestLSPDex(env, binder);
         auto obfs_map = instance->RequestObfuscationMap(env, binder);
         ConfigBridge::GetInstance()->obfuscation_map(std::move(obfs_map));
