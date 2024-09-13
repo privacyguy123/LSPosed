@@ -25,10 +25,11 @@
 #ifndef LSPOSED_NATIVE_API_H
 #define LSPOSED_NATIVE_API_H
 
-#include <cstdint>
 #include <dlfcn.h>
-#include <string>
 #include <dobby.h>
+
+#include <cstdint>
+#include <string>
 
 #include "config.h"
 #include "utils/hook_helper.hpp"
@@ -48,33 +49,36 @@ typedef struct {
 typedef NativeOnModuleLoaded (*NativeInit)(const NativeAPIEntries *entries);
 
 namespace lspd {
-    bool InstallNativeAPI(const lsplant::HookHandler& handler);
+bool InstallNativeAPI(const lsplant::HookHandler &handler);
 
-    void RegisterNativeLib(const std::string &library_name);
+void RegisterNativeLib(const std::string &library_name);
 
-    inline int HookInline(void *original, void *replace, void **backup) {
-        if constexpr (isDebug) {
-            Dl_info info;
-            if (dladdr(original, &info))
+inline int HookInline(void *original, void *replace, void **backup) {
+    Dl_info info;
+    if constexpr (isDebug) {
+        if (dladdr(original, &info))
             LOGD("Dobby hooking {} ({}) from {} ({})",
                  info.dli_sname ? info.dli_sname : "(unknown symbol)",
-				 info.dli_saddr ? info.dli_saddr : original,
+                 info.dli_saddr ? info.dli_saddr : original,
                  info.dli_fname ? info.dli_fname : "(unknown file)", info.dli_fbase);
-        }
-        return DobbyHook(original, reinterpret_cast<dobby_dummy_func_t>(replace), reinterpret_cast<dobby_dummy_func_t *>(backup));
     }
-
-    inline int UnhookInline(void *original) {
-        if constexpr (isDebug) {
-            Dl_info info;
-            if (dladdr(original, &info))
-            LOGD("Dobby unhooking {} ({}) from {} ({})",
-                 info.dli_sname ? info.dli_sname : "(unknown symbol)",
-				 info.dli_saddr ? info.dli_saddr : original,
-                 info.dli_fname ? info.dli_fname : "(unknown file)", info.dli_fbase);
-        }
-        return DobbyDestroy(original);
-    }
+    if (!info.dli_sname) return 1;
+    return DobbyHook(original, reinterpret_cast<dobby_dummy_func_t>(replace),
+                     reinterpret_cast<dobby_dummy_func_t *>(backup));
 }
 
-#endif //LSPOSED_NATIVE_API_H
+inline int UnhookInline(void *original) {
+    Dl_info info;
+    if constexpr (isDebug) {
+        if (dladdr(original, &info))
+            LOGD("Dobby unhooking {} ({}) from {} ({})",
+                 info.dli_sname ? info.dli_sname : "(unknown symbol)",
+                 info.dli_saddr ? info.dli_saddr : original,
+                 info.dli_fname ? info.dli_fname : "(unknown file)", info.dli_fbase);
+    }
+    if (!info.dli_sname) return 1;
+    return DobbyDestroy(original);
+}
+}  // namespace lspd
+
+#endif  // LSPOSED_NATIVE_API_H
