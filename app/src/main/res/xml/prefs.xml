@@ -98,6 +98,14 @@
             android:persistent="false"
             android:summary="@string/settings_enable_log_watchdog_summary"
             android:title="@string/settings_enable_log_watchdog" />
+        
+            <rikka.material.preference.MaterialSwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_outline_assignment_24"
+            android:key="disable_logs"
+            android:persistent="false"
+            android:summary="@string/settings_disable_logs_summary"
+            android:title="@string/settings_disable_logs" />
 
         <rikka.material.preference.MaterialSwitchPreference
             android:defaultValue="true"

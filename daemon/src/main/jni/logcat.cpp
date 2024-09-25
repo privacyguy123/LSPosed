@@ -18,6 +18,8 @@ using namespace std::chrono_literals;
 constexpr size_t kMaxLogSize = 4 * 1024 * 1024;
 constexpr size_t kLogBufferSize = 64 * 1024;
 
+std::atomic<bool> disable_logs = std::atomic<bool>(false);
+
 namespace {
     constexpr std::array<char, ANDROID_LOG_SILENT + 1> kLogChar = {
             /*ANDROID_LOG_UNKNOWN*/'?',
@@ -341,4 +343,16 @@ Java_org_lsposed_lspd_service_LogcatService_runLogcat(JNIEnv *env, jobject thiz)
     jmethodID method = env->GetMethodID(clazz, "refreshFd", "(Z)I");
     Logcat logcat(env, thiz, method);
     logcat.Run();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_lsposed_lspd_service_LogcatService_enableLogsNative(JNIEnv *env, jobject thiz) {
+    disable_logs.store(false);  // Enable logs
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_lsposed_lspd_service_LogcatService_disableLogsNative(JNIEnv *env, jobject thiz) {
+    disable_logs.store(true);  // Disable logs
 }

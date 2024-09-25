@@ -100,6 +100,7 @@ public class ConfigManager {
 
     private boolean verboseLog = true;
     private boolean logWatchdog = true;
+    private boolean disableLogs = false;
     private boolean dexObfuscate = true;
     private boolean enableStatusNotification = true;
     private Path miscPath = null;
@@ -273,6 +274,9 @@ public class ConfigManager {
 
         bool = config.get("enable_log_watchdog");
         logWatchdog = bool == null || (boolean) bool;
+        
+        bool = config.get("disable_logs");
+        disableLogs = bool == null || (boolean) bool;
 
         bool = config.get("enable_dex_obfuscate");
         dexObfuscate = bool == null || (boolean) bool;
@@ -1065,6 +1069,21 @@ public class ConfigManager {
 
     public boolean isLogWatchdogEnabled() {
         return logWatchdog;
+    }
+
+    public void setDisableLogs(boolean on) {
+        var logcatService = ServiceManager.getLogcatService();
+        if (on) {
+            logcatService.enableLogs();
+        } else {
+            logcatService.disableLogs();
+        }
+        updateModulePrefs("lspd", 0, "config", "disable_logs", on);
+        disableLogs = on;
+    }
+
+    public boolean isDisableLogsEnabled() {
+        return disableLogs;
     }
 
     public void setDexObfuscate(boolean on) {

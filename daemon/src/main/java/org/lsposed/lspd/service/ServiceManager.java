@@ -124,6 +124,9 @@ public class ServiceManager {
         if (configManager.isLogWatchdogEnabled())
             logcatService.enableWatchdog();
 
+        if (configManager.isDisableLogsEnabled())
+            logcatService.disableLogs();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
             permissionManagerWorkaround();
 

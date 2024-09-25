@@ -91,4 +91,8 @@ interface ILSPManagerService {
     void setLogWatchdog(boolean enable) = 49;
 
     boolean isLogWatchdogEnabled() = 50;
+
+    void setDisableLogs(boolean enable) = 51;
+
+    boolean isDisableLogsEnabled() = 52;
 }

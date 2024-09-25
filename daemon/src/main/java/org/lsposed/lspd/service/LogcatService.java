@@ -28,6 +28,9 @@ public class LogcatService implements Runnable {
     private int verboseFd = -1;
     private Thread thread = null;
 
+    private native void enableLogsNative();
+    private native void disableLogsNative();
+
     static class LogLRU extends LinkedHashMap<File, Object> {
         private static final int MAX_ENTRIES = 10;
 
@@ -188,6 +191,14 @@ public class LogcatService implements Runnable {
 
     public void disableWatchdog() {
         Log.i(TAG, "!!stop_watchdog!!");
+    }
+
+    public void enableLogs() {
+        enableLogsNative();
+    }
+
+    public void disableLogs() {
+        disableLogsNative();
     }
 
     public void refresh(boolean isVerboseLog) {
