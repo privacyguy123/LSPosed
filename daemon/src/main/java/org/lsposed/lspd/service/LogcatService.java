@@ -30,6 +30,8 @@ public class LogcatService implements Runnable {
 
     private native void enableLogsNative();
     private native void disableLogsNative();
+    private native void enableVerboseLogsNative();
+    private native void disableVerboseLogsNative();
 
     static class LogLRU extends LinkedHashMap<File, Object> {
         private static final int MAX_ENTRIES = 10;
@@ -179,10 +181,12 @@ public class LogcatService implements Runnable {
 
     public void startVerbose() {
         Log.i(TAG, "!!start_verbose!!");
+        enableVerboseLogsNative();
     }
 
     public void stopVerbose() {
         Log.i(TAG, "!!stop_verbose!!");
+        disableVerboseLogsNative();
     }
 
     public void enableWatchdog() {

@@ -19,6 +19,7 @@ constexpr size_t kMaxLogSize = 4 * 1024 * 1024;
 constexpr size_t kLogBufferSize = 64 * 1024;
 
 std::atomic<bool> disable_logs = std::atomic<bool>(false);
+std::atomic<bool> verbose_ = std::atomic<bool>(false);
 
 namespace {
     constexpr std::array<char, ANDROID_LOG_SILENT + 1> kLogChar = {
@@ -131,7 +132,7 @@ private:
 
     pid_t my_pid_ = getpid();
 
-    bool verbose_ = true;
+    // bool verbose_ = false;
     std::atomic<bool> enable_watchdog = std::atomic<bool>(false);
 };
 
@@ -343,6 +344,18 @@ Java_org_lsposed_lspd_service_LogcatService_runLogcat(JNIEnv *env, jobject thiz)
     jmethodID method = env->GetMethodID(clazz, "refreshFd", "(Z)I");
     Logcat logcat(env, thiz, method);
     logcat.Run();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_lsposed_lspd_service_LogcatService_enableVerboseLogsNative(JNIEnv *env, jobject thiz) {
+    verbose_.store(true);  // Enable logs
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_lsposed_lspd_service_LogcatService_disableVerboseLogsNative(JNIEnv *env, jobject thiz) {
+    verbose_.store(false);  // Disable logs
 }
 
 extern "C"
