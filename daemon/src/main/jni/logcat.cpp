@@ -308,6 +308,7 @@ void Logcat::Run() {
     EnsureLogWatchDog();
 
     while (true) {
+        disable_logs.wait(true); 
         std::unique_ptr<logger_list, decltype(&android_logger_list_free)> logger_list{
                 android_logger_list_alloc(0, tail, 0), &android_logger_list_free};
         tail = tail_after_crash;
@@ -362,6 +363,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_org_lsposed_lspd_service_LogcatService_enableLogsNative(JNIEnv *env, jobject thiz) {
     disable_logs.store(false);  // Enable logs
+    disable_logs.notify_one();  // Resume the `Run` loop if it was waiting
 }
 
 extern "C"
