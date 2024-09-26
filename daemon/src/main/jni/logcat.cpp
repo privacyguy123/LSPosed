@@ -325,6 +325,7 @@ void Logcat::Run() {
         struct log_msg msg{};
 
         while (true) {
+            disable_logs.wait(true);
             if (android_logger_list_read(logger_list.get(), &msg) <= 0) [[unlikely]] break;
 
             ProcessBuffer(&msg);
